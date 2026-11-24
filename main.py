@@ -43,8 +43,20 @@ def main() -> None:
         )
     out_dir = "/output"
     os.makedirs(out_dir, exist_ok=True)
-    with open(os.path.join(out_dir, "entry.txt"), "w", encoding="utf-8") as f:
+    out_path = os.path.join(out_dir, "entry.txt")
+    with open(out_path, "w", encoding="utf-8") as f:
         f.write(line)
+    # Read the file back and verify the gate on what was actually written,
+    # not just on the string in memory.
+    with open(out_path, "r", encoding="utf-8") as f:
+        written = f.read()
+    if written != line:
+        raise SystemExit("round-trip check failed: entry.txt differs")
+    if not 1 <= len(written) <= MAX_CHARS:
+        raise SystemExit(
+            "entry.txt is %d characters, outside the 1-%d gate"
+            % (len(written), MAX_CHARS)
+        )
     print("wrote %d characters to /output/entry.txt" % len(line))
 
 
